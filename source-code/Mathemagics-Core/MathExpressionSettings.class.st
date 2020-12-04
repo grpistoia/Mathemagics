@@ -36,7 +36,7 @@ Class {
 		'Default',
 		'UseSingletonParser'
 	],
-	#category : #'Mathemagics-Core'
+	#category : #'Mathemagics-Core-Settings'
 }
 
 { #category : #accessing }
