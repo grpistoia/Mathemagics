@@ -12,3 +12,5 @@ Example code.. (choosing theme)
     MathExpPower leftSide: (MathExpVariable symbol: 'x')
                  rightSide: (MathExpNumber value: 2)
 ```
+
+Forcing theme to upload..
