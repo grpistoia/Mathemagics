@@ -819,7 +819,7 @@ MathExpression >> runSimplifyRulesTrailOn: aTrail [
 { #category : #accessing }
 MathExpression >> settings [
 	"If set.. will return the one selected.. otherwise the system default."
-	^ settings ifNil: [ MathExpressionSettings default ] ifNotNil: [ settings ].
+	^ settings ifNil: [ MathemagicsSettings default ] ifNotNil: [ settings ].
 ]
 
 { #category : #accessing }

@@ -24,7 +24,7 @@ Internal Representation and Key Implementation Points.
 
 "
 Class {
-	#name : #MathExpressionSettings,
+	#name : #MathemagicsSettings,
 	#superclass : #Object,
 	#instVars : [
 		'numbersLeadProducts',
@@ -40,13 +40,13 @@ Class {
 }
 
 { #category : #accessing }
-MathExpressionSettings class >> default [
+MathemagicsSettings class >> default [
 	"This one holds the default settings but you can change if you like, and cascade down through the expressions"
 	^ Default ifNil: [ Default := self new ].
 ]
 
 { #category : #accessing }
-MathExpressionSettings class >> reset [
+MathemagicsSettings class >> reset [
 	"Destroy the defaults.. the next call will default"
 	Default := nil.
 	"Avoid the warning"
@@ -54,60 +54,60 @@ MathExpressionSettings class >> reset [
 ]
 
 { #category : #accessing }
-MathExpressionSettings class >> useSingletonParser [
+MathemagicsSettings class >> useSingletonParser [
 	"For debug, when I want to add classes and reload automatically"
 	^ UseSingletonParser ifNil: [ UseSingletonParser := true ]
 ]
 
 { #category : #accessing }
-MathExpressionSettings class >> useSingletonParser: aBoolean [
+MathemagicsSettings class >> useSingletonParser: aBoolean [
 	UseSingletonParser := aBoolean
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> numbersLeadProducts [
+MathemagicsSettings >> numbersLeadProducts [
 	"I answer if to show { 2*x } rather than { x*2 } (which is the internal format)"
 	"Default on first call rather than initialize everything"
 	^ numbersLeadProducts ifNil: [ numbersLeadProducts := true ]
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> numbersLeadProducts: aBoolean [
+MathemagicsSettings >> numbersLeadProducts: aBoolean [
 	numbersLeadProducts := aBoolean
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> prettyMathSymbols [
+MathemagicsSettings >> prettyMathSymbols [
 	"I answer if you want to print symbol of Pi rather than the text 'pi' and others"
 	"Default on first call rather than initialize everything"
 	^ prettyMathSymbols ifNil: [ prettyMathSymbols := true ]
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> prettyMathSymbols: aBoolean [
+MathemagicsSettings >> prettyMathSymbols: aBoolean [
 	prettyMathSymbols := aBoolean
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> spacedBracketed [
+MathemagicsSettings >> spacedBracketed [
 	"I answer if you want to add spaces inside parenthesis like { ( a+b ) } rather than { (a+b) }"
 	"Default on first call rather than initialize everything"
 	^ spacedBracketed ifNil: [ spacedBracketed := false ]
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> spacedBracketed: aBoolean [
+MathemagicsSettings >> spacedBracketed: aBoolean [
 	spacedBracketed := aBoolean
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> spacedTerms [
+MathemagicsSettings >> spacedTerms [
 	"I answer if you want to add spaces around +/- { a + b } rather than { a+b }"
 	"Default on first call rather than initialize everything"
 	^ spacedTerms ifNil: [ spacedTerms := true ]
 ]
 
 { #category : #accessing }
-MathExpressionSettings >> spacedTerms: aBoolean [
+MathemagicsSettings >> spacedTerms: aBoolean [
 	spacedTerms := aBoolean
 ]

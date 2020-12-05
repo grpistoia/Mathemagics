@@ -79,14 +79,14 @@ MathExpressionBaseTest >> setUp [
 	ten := MathExpNumber ten.
 
 	"I put the likely default.. but user may change.."
-	prettySettings := MathExpressionSettings new. "I create my default"
+	prettySettings := MathemagicsSettings new. "I create my default"
 	prettySettings prettyMathSymbols: true.
 	prettySettings spacedBracketed: true.
 	prettySettings numbersLeadProducts: true.
 	prettySettings spacedTerms: true.
 
 	"This I make it different on purpose"
-	testSettings := MathExpressionSettings new.
+	testSettings := MathemagicsSettings new.
 	testSettings prettyMathSymbols: false.
 	testSettings spacedBracketed: false.
 	testSettings numbersLeadProducts: false.

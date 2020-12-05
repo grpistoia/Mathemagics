@@ -76,7 +76,7 @@ MathExpressionParser class >> reset [
 MathExpressionParser class >> singletonParse: aMathExpressionTextInfixFormat [
 	"The parser normaly doesnt change, so can be cached as singleton and parser."
 	| myParser |
-	myParser := (MathExpressionSettings useSingletonParser)
+	myParser := (MathemagicsSettings useSingletonParser)
 						ifTrue: [ Singleton ifNil: [ Singleton := self new ] ]
 						ifFalse: [ self new ].
 	"now call the parser"
