@@ -54,14 +54,14 @@ MathExpSine >> runSimplifyRulesTrailOn: aTrail [
 	"Specific to this operation, then default"
 
 	"sin(arcsin(x)) => x"
-	(subexpression class = MathExpArcSine) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
+	(subexpression class == MathExpArcSine) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
 
 	"{ sin(a + b) = cos(a)*sin(b) + sin(a)*cos(b) } AT THE MOMENT NOT HELPING"
-	"(subexpression isKindOf: MathExpAddition) | (subexpression isKindOf: MathExpSubtraction) ifTrue: [
+	"(subexpression isClassddition) | (subexpression isClassSubtraction) ifTrue: [
 		| a b |
 		a := subexpression leftSide.
 		b := subexpression rightSide.
-		(subexpression isKindOf: MathExpSubtraction) ifTrue: [ b := b negated ].
+		(subexpression isClassSubtraction) ifTrue: [ b := b negated ].
 		^ (self trackOn: (a cos * b sin) + (a sin * b cos)) simplify.
 	]."
 

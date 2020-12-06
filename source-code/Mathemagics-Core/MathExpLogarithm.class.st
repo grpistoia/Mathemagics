@@ -206,4 +206,6 @@ MathExpLogarithm >> runSimplifyRulesTrailOn: aTrail [
 MathExpLogarithm >> supportLogarithmSimplification [
 	"log{base}( base ^ x ) => x"
 	^ (rightSide isKindOf: MathExpPower) and: [ leftSide = rightSide leftSide ].
+	
+	"NOTE: Not using class comparison because of the subclasses"
 ]

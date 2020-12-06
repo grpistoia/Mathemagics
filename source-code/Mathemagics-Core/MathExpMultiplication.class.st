@@ -85,16 +85,14 @@ MathExpMultiplication >> expand [
 	binarySide := leftSide class isBasicOperator ifTrue: [ leftSide ] ifFalse: [ rightSide ].
 	unarySide := leftSide class isBasicOperator ifTrue: [ rightSide ] ifFalse: [ leftSide ].
 
-	self assert: self isCommutative.
-
 	"a * (b + c)"
-	binarySide class = MathExpAddition ifTrue: [ ^ (binarySide leftSide * unarySide) + (binarySide rightSide * unarySide) ].
+	binarySide isClassAddition ifTrue: [ ^ (binarySide leftSide * unarySide) + (binarySide rightSide * unarySide) ].
 	"a * (b - c)"
-	binarySide class = MathExpSubtraction ifTrue: [ ^ (binarySide leftSide * unarySide) - (binarySide rightSide * unarySide) ].
+	binarySide isClassSubtraction ifTrue: [ ^ (binarySide leftSide * unarySide) - (binarySide rightSide * unarySide) ].
 	"a * (b * c)"
-	binarySide class = MathExpMultiplication ifTrue: [ ^ self commuteTerms ].
+	binarySide isClassMultiplication ifTrue: [ ^ self commuteTerms ].
 	"a * (b / c)"
-	binarySide class = MathExpDivision ifTrue: [ ^ (binarySide leftSide * unarySide) / (binarySide rightSide) ].
+	binarySide isClassDivision ifTrue: [ ^ (binarySide leftSide * unarySide) / (binarySide rightSide) ].
 
 	"Only +-*/ are expandable but I let you add functions later"
 	^ super expand.

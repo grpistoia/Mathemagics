@@ -118,14 +118,12 @@ MathExpDivision >> expand [
 	binarySide := leftSide class isBasicOperator ifTrue: [ leftSide ] ifFalse: [ rightSide ].
 	unarySide := leftSide class isBasicOperator ifTrue: [ rightSide ] ifFalse: [ leftSide ].
 
-	self assert: self isCommutative not.
-
 	"a / (b + c)"
-	binarySide class = MathExpAddition ifTrue: [ ^ self ]. "Nothing to do"
+	binarySide isClassAddition ifTrue: [ ^ self ]. "Nothing to do"
 	"a / (b - c)"
-	binarySide class = MathExpSubtraction ifTrue: [ ^ self ]. "Nothing to do"
+	binarySide isClassSubtraction ifTrue: [ ^ self ]. "Nothing to do"
 	"a / (b * c)"
-	binarySide class = MathExpMultiplication ifTrue: [
+	binarySide isClassMultiplication ifTrue: [
 		"because is not commutative"
 		(rightSide == binarySide)
 		"x / (b * y) = (x/y) * (1/b) = (x/y) / b"
@@ -140,7 +138,7 @@ MathExpDivision >> expand [
 		].
 	].
 	"a / (b / c)"
-	binarySide class = MathExpDivision ifTrue: [
+	binarySide isClassDivision ifTrue: [
 		"because is not commutative"
 		(rightSide == binarySide)
 		"a / (b / c) = (a / 1) / (b / c) = (a*c) / b"
@@ -263,7 +261,7 @@ MathExpDivision >> supportDivisionOfFractions [
 	| theNumerator theDenominator a b c d |
 
 	"One has to be a division"
-	(leftSide class = MathExpDivision) | (rightSide class = MathExpDivision) ifFalse: [ ^ false ] .
+	(leftSide isClassDivision) | (rightSide isClassDivision) ifFalse: [ ^ false ] .
 
 	theNumerator := leftSide asFraction.
 	theDenominator := rightSide asFraction.
@@ -274,9 +272,7 @@ MathExpDivision >> supportDivisionOfFractions [
 	d := theDenominator rightSide.
 
 	"Is there any term getting better after?.."
-	^ 	((a relatedTo: b) not & (a relatedTo: d))
-		|
-		((c relatedTo: d) not & (b relatedTo: c)).
+	^ 	((a relatedTo: b) not & (a relatedTo: d)) | ((c relatedTo: d) not & (b relatedTo: c)).
 ]
 
 { #category : #testing }
@@ -285,7 +281,7 @@ MathExpDivision >> supportDivisionOfProducts [
 	| theNumerator theDenominator a b c d |
 
 	"One has to be binary.. may be multiplication or power or something"
-	(leftSide class = MathExpMultiplication) | (rightSide class = MathExpMultiplication) ifFalse: [ ^ false ] .
+	(leftSide isClassMultiplication) | (rightSide isClassMultiplication) ifFalse: [ ^ false ] .
 
 	theNumerator := leftSide asProduct.
 	theDenominator := rightSide asProduct.

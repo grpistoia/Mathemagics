@@ -59,7 +59,7 @@ MathExpArcSine >> runSimplifyRulesTrailOn: aTrail [
 
 	self flag: #mayReturnFormulaInstead.
 	"arcsin(sin(x)) => x  .. is actually { arcsin( sin x ) = x + 2*k*pi } but made simple here"
-	(subexpression class = MathExpSine) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
+	(subexpression class == MathExpSine) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
 
 	"Generic simplification"
 	^ super runSimplifyRulesTrailOn: aTrail.

@@ -783,6 +783,17 @@ MathExpressionClassesTest >> testPowerSimplify [
 	temp1 := x ** (two ** five).
 	temp2 := x ** (2 ** 5).
 	self assert: temp1 simplify equals: temp2.
+	
+	"Powers are a strange beast... they should all work"
+	self assert: ((x ** two) sqr) simplify equals: (x ** 4).
+	self assert: (x sqr ** two) simplify equals: (x ** 4).
+	self assert: (x sqr sqr) simplify equals: (x ** 4).
+	self assert: (x sqr sqrt) simplify equals: x.
+	self assert: (x sqrt sqr) simplify equals: x.
+
+	
+
+
 ]
 
 { #category : #tests }

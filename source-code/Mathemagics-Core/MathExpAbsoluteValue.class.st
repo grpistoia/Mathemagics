@@ -63,7 +63,7 @@ MathExpAbsoluteValue >> runSimplifyRulesTrailOn: aTrail [
 	"Specific to this operation, then default"
 
 	"{ abs(Negative(fx()) = > abs(fx()) } in case fx() is negative"
-	(subexpression class = MathExpNegative)
+	(subexpression isClassNegative)
 		ifTrue: [ ^ self simplifyInto: (subexpression subexpression abs) trail: aTrail ].
 
 	"{ abs(K) <=> K >= 0 => K}"
@@ -72,8 +72,8 @@ MathExpAbsoluteValue >> runSimplifyRulesTrailOn: aTrail [
 	"{ abs(+/-a) = a } .. when the value is just a number.. no need to keep it"
 	(subexpression isNumericConstant) ifTrue: [ ^ MathExpNumber value: (subexpression value abs) ].
 
-	"{ abs(x^2) = x^2 }"
-	((subexpression isKindOf: MathExpPower) and: [ subexpression evenIntegerPower ])
+	"{ abs(x^2) = x^2 } .. notice subclasses like Sqrt are excluded"
+	(subexpression isClassPower and: [ subexpression evenIntegerPower ])
 		ifTrue: [ ^ self simplifyInto: subexpression trail: aTrail ].
 
 	"Generic simplification"

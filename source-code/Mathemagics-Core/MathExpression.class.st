@@ -171,7 +171,7 @@ MathExpression class >> isAbstract [
 { #category : #testing }
 MathExpression class >> isAlsoUnarySign [
 	"These ones are not only operations but collide with the unary signs"
-	^ (self = MathExpAddition) | (self = MathExpSubtraction) | (self = MathExpNegative).
+	^ (self == MathExpAddition) | (self == MathExpSubtraction) | (self == MathExpNegative).
 ]
 
 { #category : #testing }
@@ -188,12 +188,8 @@ MathExpression class >> isBinaryOperator [
 
 { #category : #testing }
 MathExpression class >> isFunction [
-	"Answer if the receiver is a function (atm only unary functions are defined)."
-	self isSimpleOperator ifTrue: [ ^ false ].
-	self == MathExpNegative ifTrue: [ ^ false ].
-	^ (self inheritsFrom: MathExpUnary) | (self inheritsFrom: MathExpBinary).
-	
-	"NOTE: May move to individual methods"
+	"There are/will-be exception so you may reimplement this. Basically there are only a few operators anyway."
+	^ self isSimpleOperator not.
 ]
 
 { #category : #testing }
@@ -205,13 +201,13 @@ MathExpression class >> isMathConstant [
 { #category : #testing }
 MathExpression class >> isNumericConstant [
 	"This represent a fix number.. such as 2.. -9.. but neither Variables nor Mathematical Constants such as Pi."
-	^ self = MathExpNumber.
+	^ self == MathExpNumber.
 ]
 
 { #category : #testing }
 MathExpression class >> isSimpleOperator [
 	"Answer if the receiver is an operator (therefore precedente becomes more relevant between them)."
-	^ self isBasicOperator or: [ {  MathExpPower } includes: self ].
+	^ self isBasicOperator or: [ { MathExpPower . MathExpNegative } includes: self ].
 
 	"NOTE: In the future you can add // or something else."
 ]
@@ -435,7 +431,7 @@ MathExpression >> asPower [
 
 { #category : #converting }
 MathExpression >> asProduct [
-	"With 'Product' means Multiplication. Basically x as product is x*1 (mainly for simplification). Multiplication should do nothing, of course."
+	"'Product' means Multiplication. Basically x as product is x*1 (mainly for simplification)."
 	^ self * MathExpNumber one.
 ]
 
@@ -464,7 +460,7 @@ MathExpression >> convertToNumber: aResultBlock [
 	"By now I am 100% sure is a Number (including a fraction)"
 
 	"Swap?"
-	(self class = MathExpNumber) ifFalse: [
+	(self isNumericConstant) ifFalse: [
 
 		"Try to fix.. 0.05 asFraction >> (1152921504606847/2305843009213693952)"
 		temp := total asFraction.
@@ -586,16 +582,72 @@ MathExpression >> ifNumber: numberBlock ifNotNumber: notNumberBlock [
 { #category : #testing }
 MathExpression >> isAssociative [
 	"Mathematical property: Answer if { a + (b + x) => (a + b) + x }"
-	^ (self class == MathExpAddition) | (self class == MathExpMultiplication).
+	^ self isClassAddition | self isClassMultiplication.
 
 	"Question: Why you put the class here?"
 	"Answer: The associative operations wont change any time soon, simpler to read, less methods later"
 ]
 
 { #category : #testing }
+MathExpression >> isClassAddition [
+	"Some operations are exclusive to this operand. Implemented in a way to avoid using #isKindOf: and quality warning."
+	"This operand is only true in the subclass expected so class check reduces another method in the subclass."
+	^ self class == MathExpAddition.
+	
+	"NOTE: Why this is needed. Checking for instance { x + x } = { 2 * x }"
+]
+
+{ #category : #testing }
+MathExpression >> isClassDivision [
+	"Some operations are exclusive to this operand. Implemented in a way to avoid using #isKindOf: and quality warning."
+	"This operand is only true in the subclass expected so class check reduces another method in the subclass."
+	^ self class == MathExpDivision.
+	
+	"NOTE: Why this is needed. Checking for instance { x / 1 } = { x }"
+]
+
+{ #category : #testing }
+MathExpression >> isClassMultiplication [
+	"Some operations are exclusive to this operand. Implemented in a way to avoid using #isKindOf: and quality warning."
+	"This operand is only true in the subclass expected so class check reduces another method in the subclass."
+	^ self class == MathExpMultiplication.
+	
+	"NOTE: Why this is needed. Checking for instance { x * x } = { x ^ 2 }"
+]
+
+{ #category : #testing }
+MathExpression >> isClassNegative [
+	"Some operations are exclusive to this operand. Implemented in a way to avoid using #isKindOf: and quality warning."
+	"This operand is only true in the subclass expected so class check reduces another method in the subclass."
+	^ self class == MathExpNegative.
+	
+	"NOTE: Why this is needed. Checking for instance { - (- x) } = { +x }"
+	
+	"This is the real deal why the method is not called #isNegative or #negative. I need to ensure is the class itself."
+]
+
+{ #category : #testing }
+MathExpression >> isClassPower [
+	"Some operations are exclusive to this operand. Implemented in a way to avoid using #isKindOf: and quality warning."
+	"This operand is only true in the subclass expected so class check reduces another method in the subclass."
+	^ self class == MathExpPower.
+	
+	"NOTE: Why this is needed. Checking for instance { x ^ -1 } = { 1/x }"
+]
+
+{ #category : #testing }
+MathExpression >> isClassSubtraction [
+	"Some operations are exclusive to this operand. Implemented in a way to avoid using #isKindOf: and quality warning."
+	"This operand is only true in the subclass expected so class check reduces another method in the subclass."
+	^ self class == MathExpSubtraction.
+	
+	"NOTE: Why this is needed. Checking for instance { x - x } = { 0 }"
+]
+
+{ #category : #testing }
 MathExpression >> isCommutative [
 	"Mathematical property: Answer if { a + x => x + a .. or .. x * b => b * x }"
-	^ (self class == MathExpAddition) | (self class == MathExpMultiplication).
+	^ self isClassAddition | self isClassMultiplication.
 
 	"Question: Why you put the class here?"
 	"Answer: The associative operations wont change any time soon, simpler to read, less methods later"
@@ -604,7 +656,7 @@ MathExpression >> isCommutative [
 { #category : #testing }
 MathExpression >> isDistributive [
 	"Mathematical property: Answer if { a * (b + c) => a * b + a * c }"
-	^ self class == MathExpMultiplication.
+	^ self isClassMultiplication.
 ]
 
 { #category : #testing }
@@ -616,7 +668,7 @@ MathExpression >> isExpandable [
 { #category : #testing }
 MathExpression >> isFraction [
 	"A bit of a override for Number"
-	^ (self isKindOf: MathExpDivision) or: [ self asNumberSatisfy: [ :value | value isFraction ] ].
+	^ (self isClassDivision) or: [ self asNumberSatisfy: [ :value | value isFraction ] ].
 ]
 
 { #category : #testing }
@@ -647,8 +699,10 @@ MathExpression >> isNotZero [
 
 { #category : #testing }
 MathExpression >> isNumber [
-	"Evaluates if the mathematical expression is a number. That assumes all Variables have been assigned a value. Use #asNumber to get the value."
+	"Evaluates if the mathematical expression is a number. That assumes all Variables have been assigned a value."
 	self subclassResponsibility.
+	
+	"NOTE: Since there are variables and undefine cases, you must use #isNumber before this method."
 ]
 
 { #category : #testing }
@@ -704,7 +758,7 @@ MathExpression >> logarithm: anExpression [
 { #category : #mathematics }
 MathExpression >> mathSymbol [
 	"This is the default symbol understood in Math for this expression { sin, cos, +, etc }."
-	"Instance call this normally to print, which is also call on creation by the parser."
+	"Instance call this normally to print, where the parser does on the class side."
 	^ self class mathSymbol.
 
 	"NOTE: Normally the class knows what to do, since 1 class = 1 expression, except Numbers and Variables."
@@ -713,6 +767,7 @@ MathExpression >> mathSymbol [
 { #category : #mathematics }
 MathExpression >> mathSymbolPro [
 	"Some symbols are per instance (like variables), but most are class level."
+	"Instance call this normally to print, where the parser does on the class side."
 	^ self class mathSymbolPro.
 
 	"NOTE: Normally the class knows what to do, since 1 class = 1 expression, except Numbers and Variables."
@@ -721,6 +776,7 @@ MathExpression >> mathSymbolPro [
 { #category : #mathematics }
 MathExpression >> mathSymbolSmalltalk [
 	"Some symbols are per instance (like variables), but most are class level."
+	"Instance call this normally to print, where the parser does on the class side."
 	^ self class mathSymbolSmalltalk.
 
 	"NOTE: Normally the class knows what to do, since 1 class = 1 expression, except Numbers and Variables."
@@ -736,7 +792,7 @@ MathExpression >> negated [
 
 { #category : #testing }
 MathExpression >> negative [
-	"To have the same as Number."
+	"To have the same as Number.. answers if the number is negative (should really be called #isNegative)"
 	^ self asNumberSatisfy: [ :value | value < 0 ].
 ]
 
@@ -836,9 +892,9 @@ MathExpression >> simplify [
 
 { #category : #private }
 MathExpression >> simplifyInto: aNewForm trail: aTrail [
-	"Register that this expression mutates to another.. and keep track is not a recursion freeze"
-	
-	"NOTE: This is never call on a variable or number, is really like a final method"
+	"Register that this expression mutates from another.. and keep track is not a recursion freeze"
+	"The clever thing is that the trail will spread if needed or die as soon as the expression is reduced."
+	"The code was tested without this, it was introduced later to guarantee it will not hang."
 	| temp |
 
 	"has the item.. stop recursion.. I choose the latest"
@@ -855,6 +911,9 @@ MathExpression >> simplifyInto: aNewForm trail: aTrail [
 
 	"Call low-level simplify (programmer should override the method below)"
 	^ aNewForm runSimplifyRulesTrailOn: temp.
+
+	"NOTE: This is never call on a variable or number, is really like a final method"
+
 ]
 
 { #category : #mathematics }
@@ -893,7 +952,7 @@ MathExpression >> squared [
 MathExpression >> strictlyNegative [
 	"You may think I wanted to look smart and do my version of strictlyPositive in Smalltalk, but noap"
 	"Some expressions like the unary negative or a negative constant is always negative, but { -2*x } may not be"
-	^ (self class = MathExpNegative) or: [ (self isMathConstant) | (self isNumericConstant) and: [ self asNumber negative ] ].
+	^ (self isClassNegative) or: [ (self isMathConstant) | (self isNumericConstant) and: [ self asNumber negative ] ].
 
 	"NOTE: Do we consider { - ( - 5 ) } negative? No, but { -5 } is negative although gets reduced to positive. Same here."
 ]
@@ -906,24 +965,20 @@ MathExpression >> tan [
 
 { #category : #mathematics }
 MathExpression >> termOrder [
-	"String to allow quickly sorting terms in the expression without nested compare."
-	
-	"For instance.. { 4^z - 7^20 + 6 + x + x^2 + x^z + (-y) => x^z + x^2	4^z + x - y - 7^20 + 6 }"
+	"Answer a String and allows quickly sorting terms in the expression without nested compare."
 	self subclassResponsibility.
 
+	"For instance.. { 4^z - 7^20 + 6 + x + x^2 + x^z + (-y) } becomes { x^z + x^2 + 4^z + x - y - 7^20 + 6 }"
+
 	"This sort by variable and power, not by structure:"
-	"A  - Power of a variable goes first"
-	"B  - Variables"
-	"C  - Power to variable exponents"
-	"... (future gap)"
-	"F  - Function on variables"
-	"... (future gap)"
-	"H  - Numbers (simplification)"
-	"... (future gap)"
-	"J  - Power of constants"
-	"K? - Mathematical constants (Fpi)"
-	"... (future gap)"
-	"U  - Unclassified"
+	"A  : Power of a variable goes first"
+	"B  : Variables (power 1)"
+	"C  : Power to variable exponents"
+	"F  : Function on variables"
+	"H  : Numbers (simplification)"
+	"J  : Power of constants"
+	"K? : Mathematical constants (Fpi)"
+	"U  : Unclassified"
 
 	"Notice other binaries do not affect sorting"
 	"Unary will pass it to the subexpression"

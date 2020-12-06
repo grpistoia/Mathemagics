@@ -68,7 +68,7 @@ MathExpTangent >> runSimplifyRulesTrailOn: aTrail [
 	"Specific to this operation, then default"
 
 	"arctan(tan(x)) => x"
-	(subexpression class = MathExpArcTangent) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
+	(subexpression class == MathExpArcTangent) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
 
 	"Notice { (Float pi / 2) tan } is returning a number and not infinity..."
 	(subexpression equalsHalfPi) | (subexpression equalsMinusHalfPi) ifTrue: [ ^ MathExpUndefined new ].

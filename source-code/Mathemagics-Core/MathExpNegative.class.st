@@ -91,13 +91,13 @@ MathExpNegative >> expand [
 	"Usually special cases that as not associative or commutative { 3 + (5 - x) => 3 + 5 - x }"
 
 	"- ( -x ) .. although normally self resolved"
-	subexpression class = MathExpNegative ifTrue: [ ^ subexpression subexpression ].
+	subexpression isClassNegative ifTrue: [ ^ subexpression subexpression ].
 	"- (a + b)"
-	subexpression class = MathExpAddition ifTrue: [ ^ (subexpression leftSide negated) - (subexpression rightSide) ].
+	subexpression isClassAddition ifTrue: [ ^ (subexpression leftSide negated) - (subexpression rightSide) ].
 	"- (a - b)"
-	subexpression class = MathExpSubtraction ifTrue: [ ^ (subexpression leftSide negated) + (subexpression rightSide) ].
+	subexpression isClassSubtraction ifTrue: [ ^ (subexpression leftSide negated) + (subexpression rightSide) ].
 	"- (a * b)"
-	subexpression class = MathExpMultiplication ifTrue: [
+	subexpression isClassMultiplication ifTrue: [
 		"Normally is written like { x * 2 }"
 		(subexpression rightSide isNumber)
 			ifTrue: [ ^ (subexpression leftSide) * (subexpression rightSide negated) ].
@@ -105,7 +105,7 @@ MathExpNegative >> expand [
 			ifFalse: [ ^ (subexpression leftSide negated) * (subexpression rightSide) ]
 	].
 	"- (a / b)"
-	subexpression class = MathExpDivision ifTrue: [
+	subexpression isClassDivision ifTrue: [
 		"Can have a number in the divident or divisor .. check "
 		(subexpression leftSide isNotNumber) & (subexpression rightSide isNumber)
 			ifTrue: [ ^ (subexpression leftSide) / (subexpression rightSide negated) ].
@@ -156,8 +156,8 @@ MathExpNegative >> wantsParenthesisUnder: parentExpression [
 	"default"
 	result := (super wantsParenthesisUnder: parentExpression).
 	"- ( - x )"
-	result := result or: [ parentExpression class == MathExpNegative ].
+	result := result or: [ parentExpression isClassNegative ].
 	"x - (-y)"
-	result := result or: [ (parentExpression class == MathExpSubtraction) and: [ parentExpression rightSide == self ] ].
+	result := result or: [ parentExpression isClassSubtraction and: [ parentExpression rightSide == self ] ].
 	^ result.
 ]

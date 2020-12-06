@@ -64,19 +64,17 @@ MathExpAddition >> expand [
 	binarySide := leftSide class isBasicOperator ifTrue: [ leftSide ] ifFalse: [ rightSide ].
 	unarySide := leftSide class isBasicOperator ifTrue: [ rightSide ] ifFalse: [ leftSide ].
 
-	self assert: self isCommutative.
-
 	"a + (b + c)"
-	binarySide class = MathExpAddition ifTrue: [ ^ self commuteTerms ].
+	binarySide isClassAddition ifTrue: [ ^ self commuteTerms ].
 	"a + (b - c)"
-	binarySide class = MathExpSubtraction ifTrue: [ ^ self commuteTerms ].
+	binarySide isClassSubtraction ifTrue: [ ^ self commuteTerms ].
 	"a + (b * c)"
-	binarySide class = MathExpMultiplication ifTrue: [
+	binarySide isClassMultiplication ifTrue: [
 		"x + (x * a) = (1+a)*x ... notice.. x^2 + (2 * x) does not works the same.. must be same power"
 		(unarySide = binarySide leftSide) | (unarySide = binarySide rightSide) ifTrue: [ ^ self factorFromSum ].
 	].
 	"a + (b / c)"
-	binarySide class = MathExpDivision ifTrue: [
+	binarySide isClassDivision ifTrue: [
 		"x + (x / a) = x * (1 + 1/a)"
 		(unarySide = binarySide leftSide) ifTrue: [ ^ self factorFromSum ].
 	].

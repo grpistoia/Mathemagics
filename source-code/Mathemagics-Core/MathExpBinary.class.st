@@ -127,9 +127,9 @@ MathExpBinary >> factorFromSum [
 	"(x1 *|/ a) +|- (x2 *|/ b)"
 	| term1 term2 x1 a x2 b coef |
 
-	self assert: (self isKindOf: MathExpAddition) | (self isKindOf: MathExpSubtraction).
-	self assert: (leftSide class isBinaryOperator not) | (leftSide isKindOf: MathExpMultiplication) | (leftSide isKindOf: MathExpDivision).
-	self assert: (rightSide class isBinaryOperator not) | (rightSide isKindOf: MathExpMultiplication) | (rightSide isKindOf: MathExpDivision).
+	self assert: (self isClassAddition | self isClassSubtraction).
+	self assert: (leftSide class isBinaryOperator not) | (leftSide isClassMultiplication) | (leftSide isClassDivision).
+	self assert: (rightSide class isBinaryOperator not) | (rightSide isClassMultiplication) | (rightSide isClassDivision).
 
 	"This puts the constant at the end"
 	term1 := leftSide asProduct sortTermsIfNeeded.
@@ -145,7 +145,7 @@ MathExpBinary >> factorFromSum [
 	(x1 = x2) ifFalse: [  ^ self ].
 
 	"This only applies to + and -"
-	coef := (self isKindOf: MathExpSubtraction) ifTrue: [ a - b ] ifFalse: [ a + b ].
+	coef := (self isClassSubtraction) ifTrue: [ a - b ] ifFalse: [ a + b ].
 
 	"Generalising.. (x * a) + x => (x * a) + (x * 1) => x * (a + 1)"
 	"Generalising.. (x * a) - x => (x * a) - (x * 1) => x * (a - 1)"
@@ -180,7 +180,7 @@ MathExpBinary >> flatPackTerm: aTerm into: aCollection [
 MathExpBinary >> flatPackTerms [
 	"Used for sorting term { x + ( x + 2 ) } => ( x , x , 2 ) }. Notice is NOT recursive, is only 1 level."
 	"For other classes wont act { x + ( x / 2 ) } => ( x , (x / 2) ) }"
-	| temp |
+	| temp zero one |
 
 	"to be 100% I can proceed"
 	self assert: (self isCommutative or: [ self isAssociative ]).
@@ -192,9 +192,13 @@ MathExpBinary >> flatPackTerms [
 	self flatPackTerm: leftSide into: temp.
 	self flatPackTerm: rightSide into: temp.
 
+	"creates only once"
+	zero := MathExpNumber zero.
+	one := MathExpNumber one.	
+
 	"This is speed.. the library adds extra *1 for division we can remove now"
-	(self isKindOf: MathExpMultiplication) ifTrue: [ temp := temp reject: [ :each | each = MathExpNumber one ] ].
-	(self isKindOf: MathExpAddition) ifTrue: [ temp := temp reject: [ :each | each = MathExpNumber zero ] ].
+	(self isClassMultiplication) ifTrue: [ temp := temp reject: [ :each | each = one ] ].
+	(self isClassAddition) ifTrue: [ temp := temp reject: [ :each | each = zero ] ].
 
 	"ready"
 	^ temp.
@@ -259,7 +263,7 @@ MathExpBinary >> isExpandable [
 	"For now.. only addition and subtraction support 2 binary"
 	(leftSide class isSingleTerm not) & (rightSide class isSingleTerm not) ifTrue: [
 		"Addition and Subtraction, yes, otherwise abort mission.."
-		^ (self class = MathExpAddition) | (self class = MathExpSubtraction).
+		^ (self isClassAddition) | (self isClassSubtraction).
 	].
 
 	"No much I can do for you.."

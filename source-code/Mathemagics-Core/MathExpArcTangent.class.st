@@ -59,7 +59,7 @@ MathExpArcTangent >> runSimplifyRulesTrailOn: aTrail [
 
 	self flag: #mayReturnFormulaInstead.
 	"arctan(tan(x)) => x"
-	(subexpression class = MathExpTangent) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
+	(subexpression class == MathExpTangent) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
 
 	"Generic simplification"
 	^ super runSimplifyRulesTrailOn: aTrail.

@@ -118,7 +118,7 @@ MathExpVariable >> derivativeFor: aVariableExpression [
 	(self = aVariableExpression) ifTrue: [ ^ MathExpNumber one ].
 
 	"Althought {MathExpVariable x = #x} if false, we do want derivative to accept a symbol, is easier."
-	(aVariableExpression isKindOf: MathExpValue)
+	(aVariableExpression isKindOf: MathExpression)
 		ifFalse: [ ^ self derivativeFor: (MathExpression safeguard: aVariableExpression) ].
 
 	"If not the variable, anythign else (like a constant or another variable) is zero"

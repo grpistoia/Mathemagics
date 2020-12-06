@@ -43,7 +43,3 @@ MathExpLogarithmBaseTwo >> mathSymbolSmalltalk [
 	
 	"NOTE: Something I couldnt express with super. I want the class side of the method."
 ]
-
-{ #category : #'see class side' }
-MathExpLogarithmBaseTwo >> seeClassSide [
-]

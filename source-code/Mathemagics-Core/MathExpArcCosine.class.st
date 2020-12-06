@@ -59,7 +59,7 @@ MathExpArcCosine >> runSimplifyRulesTrailOn: aTrail [
 
 	self flag: #mayReturnFormulaInstead.
 	"arccos(cos(x)) => x  .. is actually { arccos( cos x ) = x + 2*k*pi } but made simple here"
-	(subexpression class = MathExpCosine) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
+	(subexpression class == MathExpCosine) ifTrue: [ ^ self simplifyInto: (subexpression subexpression) trail: aTrail ].
 
 	"Generic simplification"
 	^ super runSimplifyRulesTrailOn: aTrail.

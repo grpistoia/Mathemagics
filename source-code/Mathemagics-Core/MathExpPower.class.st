@@ -55,10 +55,10 @@ MathExpPower class >> leftSide: aLeftExpression rightSide: aRightExpression [
 	"I do tolerate someone saying sqr(x) to remain and nor forced to x^2 except on simplification later on"
 
 	"You are square but the exponent is not 2 ?"
-	(self = MathExpSqr and: [exponent ~= MathExpNumber two]) ifTrue: [ ^ base ** exponent ].
+	(self == MathExpSqr and: [exponent ~= MathExpNumber two]) ifTrue: [ ^ base ** exponent ].
 
 	"You are square but the exponent is not 1/2 ?"
-	(self = MathExpSquareRoot and: [exponent ~= MathExpNumber oneHalf]) ifTrue: [ ^ base ** exponent ].
+	(self == MathExpSquareRoot and: [exponent ~= MathExpNumber oneHalf]) ifTrue: [ ^ base ** exponent ].
 
 	"Is OK to go ahead"
 	^ super leftSide: base rightSide: exponent.
@@ -160,7 +160,7 @@ MathExpPower >> printOn: aStream [
 	self utilPrint: leftSide useParenthesis: true onto: aStream. "x"
 ]
 
-{ #category : #testing }
+{ #category : #private }
 MathExpPower >> runLogarithmSimplification [
 	"to be 100% I can proceed"
 	self assert: self supportLogarithmSimplification.
@@ -168,7 +168,7 @@ MathExpPower >> runLogarithmSimplification [
 	^ rightSide rightSide.
 ]
 
-{ #category : #converting }
+{ #category : #private }
 MathExpPower >> runPowerSimplification [
 	| leftAsPower base leftExponent rightExponent |
 	"to be 100% I can proceed"
@@ -213,9 +213,9 @@ MathExpPower >> runSimplifyRulesTrailOn: aTrail [
 	(self evenIntegerPower and: [ self base strictlyNegative ])
 		ifTrue: [ ^ self simplifyInto: (self base negated ** self exponent) trail: aTrail ].
 
-	"You are x**0.5 best show sqrt(x)"
-	(self class ~= MathExpSquareRoot & self exponent isNumber
-		and: [self exponent asNumber = MathExpNumber oneHalf asNumber])
+	"You are x**0.5 best show sqrt(x) .. specially since it calculates better ( Evaluate this: 25 ** 0.5 )"
+	(self class ~= MathExpSquareRoot & self exponent isNumber 
+		and: [ { 1/2 . 0.5 } includes: self exponent asNumber ])
 		ifTrue: [ ^ self simplifyInto: (self base squareRoot ) trail: aTrail ].
 
 	"I reached here, allow the generic simplification to proceed.."
@@ -226,12 +226,16 @@ MathExpPower >> runSimplifyRulesTrailOn: aTrail [
 MathExpPower >> supportLogarithmSimplification [
 	"base ^ ( log{base}(x) ) => x"
 	^ (rightSide isKindOf: MathExpLogarithm) and: [ leftSide = rightSide leftSide ].
+	
+	"NOTE: Not using class comparison because of the subclasses"
 ]
 
 { #category : #testing }
 MathExpPower >> supportPowerSimplification [
 	"(x^n) ^ m => x^(n^m)"
-	^ (leftSide isKindOf: self class).
+	^ (leftSide isKindOf: MathExpPower). 
+	
+	"NOTE: Do not use 'self class' because will fail in subclasses like √(x^2)"
 ]
 
 { #category : #mathematics }

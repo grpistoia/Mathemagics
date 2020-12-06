@@ -39,7 +39,7 @@ MathExpSubtraction class >> precedence [
 { #category : #converting }
 MathExpSubtraction >> asCommutative [
 	"Subtraction can change to negative Addition { a - x => a + (-x) }"
-	^ leftSide + rightSide negated.
+	^ leftSide + (rightSide negated).
 ]
 
 { #category : #converting }
@@ -71,22 +71,21 @@ MathExpSubtraction >> expand [
 	binarySide := leftSide class isBasicOperator ifTrue: [ leftSide ] ifFalse: [ rightSide ].
 	unarySide := leftSide class isBasicOperator ifTrue: [ rightSide ] ifFalse: [ leftSide ].
 
-	self assert: self isCommutative not.
-
 	"a - (b + c)"
-	binarySide class = MathExpAddition ifTrue: [ ^ self asCommutative commuteTerms ].
+	binarySide isClassAddition ifTrue: [ ^ self asCommutative commuteTerms ].
 	"a - (b - c)"
-	binarySide class = MathExpSubtraction ifTrue: [ ^ self asCommutative commuteTerms ].
+	binarySide isClassSubtraction ifTrue: [ ^ self asCommutative commuteTerms ].
 	"a - (b * c)"
-	binarySide class = MathExpMultiplication ifTrue: [
+	binarySide isClassMultiplication ifTrue: [
 		"x - (x * a) = (1 - a)*x ... notice.. x^2 + (2 * x) does not works the same.. must be same power"
 		((unarySide isNotNumber) and: [ (unarySide = binarySide leftSide) | (unarySide = binarySide rightSide) ])
 			ifTrue: [ ^ self factorFromSum ].
 	].
 	"a - (b / c)"
-	binarySide class = MathExpDivision ifTrue: [
+	binarySide isClassDivision ifTrue: [
 		"x - (x / a) = x * (1 - 1/a)"
-		((unarySide isNotNumber) and: [ unarySide = binarySide leftSide ]) ifTrue: [ ^ self factorFromSum ].
+		((unarySide isNotNumber) and: [ unarySide = binarySide leftSide ]) 
+			ifTrue: [ ^ self factorFromSum ].
 	].
 
 	"Only +-*/ are expandable but I let you add functions later"
