@@ -11,7 +11,7 @@ Class {
 
 { #category : #accessing }
 MathemagicsHelp class >> bookName [
-	^'Mathemagics framework'
+	^'Mathemagics'
 ]
 
 { #category : #pages }
