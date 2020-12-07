@@ -117,6 +117,9 @@ Implementation Points:
 	- Variables are another type of expression which we are happy to apply a value before evaluating the whole expression. There is functionality to evaluate them, extract them from a mathematical expression, differentiate and so forth.
 	- At some point I thought renaming as ""Sum"", ""Difference"", ""Product"" and ""Quotient"". Those names are shorter but theoretically those are the results of the operation of those numbers.
 
+Contact:
+	Gustavo Pistoia.
+	See help class for more information.
 "
 Class {
 	#name : #MathExpression,

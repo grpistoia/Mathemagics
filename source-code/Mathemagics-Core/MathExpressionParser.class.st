@@ -34,6 +34,10 @@ Profiling done and most objects are now cached, including MathExpression tree, l
 	| newParser |
 	newParser := MathExpressionParser new.
 	[ 1000 timesRepeat: [ newParser parse: 'x + pi' ] ] timeToRun.
+
+Contact:
+	Gustavo Pistoia.
+	See help class for more information.
 "
 Class {
 	#name : #MathExpressionParser,
