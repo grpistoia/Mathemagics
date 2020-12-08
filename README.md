@@ -63,8 +63,8 @@ A few examples of things you can do:
 
 ```Smalltalk
     | fx dFx |
-    fx := MathExpression from: '-cos(x*x) + sin(x) + ln(x)'.
-    dFx:= fx derivativeFor: 'x'.                                     "2·sin(x^2)·x + cos(x) + 1/x"
+    fx := MathExpression from: 'x*x + ln(x)'.
+    dFx:= fx derivativeFor: 'x'.                                     "2·x + 1/x"
 ```
 
 * Variable extraction and evaluation
@@ -88,10 +88,11 @@ A few examples of things you can do:
 ```Smalltalk
     "Expression to a Smalltalk BlockClosure"
     | fx x |
-    fx := MathExpression from: '3*x^2 - ln(x) + pi'.                 "(3·x^2) - ln(x) + π"
+    "Math precedence means no parenthesis required"
+    fx := MathExpression from: 'x + 3 * pi'.                         "x + π·3"
 
-    "New method will generate code"
-    fx asBlock                                                       "[ :x | 3 * (x ** 2) - x ln + Float pi ]"
+    "New method will generate code with Smalltalk precedence"
+    fx asBlock                                                       "[ :x | x + (3 * Float pi) ]"
 ```
 
 ## What are the main components of this package?
@@ -296,4 +297,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Acknowledgements
 
-* Thanks to the Pharo community for constant support with discussions, experiences and hints.
+* Thanks to the Pharo community for constant support, discussions and tips.
