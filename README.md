@@ -26,20 +26,20 @@ A few examples of things you can do:
 
 ```Smalltalk
     MathExpPower leftSide: (MathExpVariable symbol: 'x')
-                 rightSide: (MathExpNumber value: 2)                  "x^2"
+                 rightSide: (MathExpNumber value: 2)              "x^2"
 ```
 
 * Building expressions with Number-like messages and power symbol
 
 ```Smalltalk
     "Notice ** gets replaced by ^ on printing"
-    MathExpVariable x ** 3 negated                                    "x^-3"
+    MathExpVariable x ** 3 negated                                "x^-3"
 ```
 
 * Building expressions with the new built-in parser
 
 ```Smalltalk
-    MathExpressionParser new parse: 'x + 2'.                          "x + 2"
+    MathExpressionParser new parse: 'x + 2'.                      "x + 2"
 ```
 
 * Parse via expression, simplify, sort terms, use symbols
@@ -48,15 +48,15 @@ A few examples of things you can do:
     | fx |
     "Notice pi gets represented with a symbol"
     fx := MathExpression from: 'x*x - (pi * -1) + x*8/1'.
-    fx simplify.                                                      "x^2 + 8·x + π"
+    fx simplify.                                                  "x^2 + 8·x + π"
 ```
 
 * Nested behaviour on simplification even for functions
 
 ```Smalltalk
     | fx |
-    fx := MathExpression from: 'sin(x*1) * cos(x+x) / sin(sqr(x)/x)'.
-    fx simplify.                                                      "cos(2·x)"
+    fx := MathExpression from: 'sin(x) * cos(x+x)/sin(sqr(x)/x)'.
+    fx simplify.                                                  "cos(2·x)"
  ```
 
 * Derivatives
@@ -64,7 +64,7 @@ A few examples of things you can do:
 ```Smalltalk
     | fx dFx |
     fx := MathExpression from: 'x*x + ln(x)'.
-    dFx:= fx derivativeFor: 'x'.                                     "2·x + 1/x"
+    dFx:= fx derivativeFor: 'x'.                                  "2·x + 1/x"
 ```
 
 * Variable extraction and evaluation
@@ -72,15 +72,15 @@ A few examples of things you can do:
 ```Smalltalk
     | fx x |
     fx := MathExpression from: 'sqrt(x) + x*x*x + 1/x'.
-    fx := fx simplify.                                               "√(x) + x^3 + 1/x"
+    fx := fx simplify.                                            "√(x) + x^3 + 1/x"
 
     "expression with variables are not reduced to a Number"
-    fx isNumber.                                                     "false"
+    fx isNumber.                                                  "false"
 
     "Extract variable and evaluate for a number"
     x := fx variable: #x.
     x value: 5.
-    fx asNumber.                                                     "127.43606797749979"
+    fx asNumber.                                                  "127.43606797749979"
 ```
 
 * Block generation
@@ -89,10 +89,10 @@ A few examples of things you can do:
     "Expression to a Smalltalk BlockClosure"
     | fx x |
     "Math precedence means no parenthesis required"
-    fx := MathExpression from: 'x + 3 * pi'.                         "x + π·3"
+    fx := MathExpression from: 'x + 3 * pi'.                      "x + π·3"
 
     "New method will generate code with Smalltalk precedence"
-    fx asBlock                                                       "[ :x | x + (3 * Float pi) ]"
+    fx asBlock                                                    "[ :x | x + (3 * Float pi) ]"
 ```
 
 ## What are the main components of this package?
