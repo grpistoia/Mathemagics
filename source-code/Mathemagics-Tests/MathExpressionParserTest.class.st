@@ -71,6 +71,7 @@ MathExpressionParserTest >> test03Functions [
 
 	"These are very messy.. functions but not.."
 	self assert: (MathExpression from: 'sin(x)') equals: x sin.
+	self assert: (MathExpression from: 'sqrt(x)') equals: x sqrt.
 	self assert: (MathExpression from: 'sqr(x)') equals: x sqr.
 	self assert: (MathExpression from: 'x**2') equals: x ** 2.
 	self assert: (MathExpression from: 'log(x)') equals: x log.

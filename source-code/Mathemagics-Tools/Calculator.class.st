@@ -92,13 +92,19 @@ Calculator class >> menuCommandOn: aBuilder [
 		order: 15;
 		parent: #Tools;
 		help: 'Opens a calculator.';
-		iconName: #keymapBrowser.
+		iconName: self systemIconName.
 ]
 
 { #category : #'instance creation' }
 Calculator class >> open [
 	"Start a fresh calculator"
 	^ CalculatorSpec1 open.
+]
+
+{ #category : #'Polymorph-Widgets' }
+Calculator class >> systemIconName [
+	"There is no calculator"
+	^ #keymapBrowser.
 ]
 
 { #category : #'see class side' }

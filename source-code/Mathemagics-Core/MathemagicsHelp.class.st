@@ -33,7 +33,7 @@ MathemagicsHelp class >> page01onIntroduction [
 	title := 'Introduction to ' , self bookName.		
 	fullText := 
 '
-This package allow you to express Mathematical expressions (formulas) with Mathematics syntax and precedence. That means, you can write Pi rather than "Float pi", use variables, use power as ^, and using Mathematics precedence.
+This package allows you to express Mathematical expressions (formulas) with Mathematics syntax and precedence. That means, you can write Pi rather than "Float pi", use variables, use power as ^, and use Mathematics precedence.
 
 The package knows how to parse the text special characters but also how to interact with correspondent messages in Smalltalk. Therefore transcompiling to Block or calculating a value will use the correct methods.
 
@@ -55,7 +55,7 @@ MathemagicsHelp class >> page02onCodeExamples [
 	title := 'Examples'.		
 	fullText := 
 '
-Ways to create Mmathematical expressions and some messages availables:
+Here are the ways to create Mathematical expressions and some messages availables:
 
 Define an expression with bare constructors (not recommended):
 
@@ -63,7 +63,7 @@ Define an expression with bare constructors (not recommended):
 
 Define an expression using Number''s like methods:
 
-	MathExpVariable x squared.
+	MathExpVariable x squared reciprocal.
 
 Define an expression with the built-in parser:
 
@@ -88,18 +88,41 @@ Convert expression to block
 ]
 
 { #category : #pages }
-MathemagicsHelp class >> page03onAbout [
+MathemagicsHelp class >> page03onLicense [
+	"Very basics"
+	| title fullText |
+
+	"Easier to indent"
+	title := 'License & Warranty'.
+	fullText := 
+'
+Find the license and warranty at https://github.com/grpistoia/Mathemagics
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+'.
+	
+	"build a help topic"
+	^ HelpTopic title: title contents: (self heading: title), fullText readStream nextChunkText.
+]
+
+{ #category : #pages }
+MathemagicsHelp class >> page04onAbout [
 	"Very basics"
 	| title fullText |
 
 	"Easier to indent"
 	title := 'About..'.
 	fullText := 
-'Don''t hesitate to contact me in case of doubts, unwanted features, or if you are interested in collaborating:
+'
+Don''t hesitate to contact me in case of doubts, unwanted features, ideas or if you are interested in collaborating.
 
- Author.. Gustavo R. Pistoia
- Github.. grpistoia
- Gmail... grpistoia@
+Author.. Gustavo R. Pistoia
+Github.. grpistoia
+Gmail... grpistoia@
+
+For more information visit: https://github.com/grpistoia/Mathemagics
+
+December 2020
 '.
 	
 	"build a help topic"
@@ -108,7 +131,7 @@ MathemagicsHelp class >> page03onAbout [
 
 { #category : #accessing }
 MathemagicsHelp class >> pages [
-	^ #(#page01onIntroduction #page02onCodeExamples #page03onAbout).
+	^ #(#page01onIntroduction #page02onCodeExamples #page03onLicense #page04onAbout).
 ]
 
 { #category : #'see class side' }

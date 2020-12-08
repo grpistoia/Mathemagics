@@ -1,5 +1,5 @@
 "
-Spec1 application.
+Spec1 version.
 
 Class part: Although Smalltalk is so powerful, it was surprised nobody wrote calculator to handle simple mathematical expressions. Then I realised why..: It's very complicated.
 This humble calculator is designed to do the work for the basics expressions using the simple parser and the expression tree.
