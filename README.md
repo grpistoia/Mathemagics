@@ -2,37 +2,30 @@
 
 ## Symbolic algebra package written in Pharo Smalltalk
 
-Pharo Smalltalk is an expressive and powerful language. The environment is extremely productive, but a few points got my attention:
+Pharo Smalltalk is an expressive and powerful language, but when you just working with it, some things are rather puzzling:
 
-* There is no built-in Calculator application. Smalltalk have the Playground but sadly the precedence of operands does not fully match Mathematics precedence and therefore cases like `1 + 2 * 3` will resolve `1 + 2` first, rather than the multiplication first. The power and simplicity of the language justifies the reasons behind this, and a simple solution is adding parenthesis, although it's still confusing at times.
-* Writing a number in scientific notation does not support decimal exponents `3e2.5` (Smalltalk returns 5 in this case since the dot separate statements).
-* Missing leading zero `.45` is not supported although most people in finance are used to omitting it, and other languages take that as default.
+* There is no built-in Calculator application. Smalltalk have the Playground but sadly the precedence of operands does not fully match Mathematics precedence (`1 + 2 * 3` returns 9 rather than 7).
+* Missing leading zero `.45` is not supported although most people in finance are used to omit it, and other languages take that as default.
+* Writing a number in scientific notation does not support decimal exponents `3e2.5` (Smalltalk returns 5).
+* Some numbers become incorrect, for instance `3e-4` becomes `0.00030000000000000003`.
 * Power and square are not quite compatible therefore `25 sqrt` returns `5` but `25 ** 0.5` returns `4.999999999999999`.
 * Other cases such as `(Float pi / 2) tan` would return a huge number rather than 'Undefined' because `Float halfPi cos` is not exactly zero, but `Float halfPi sin` returns a perfect `1.0`. These results are confusing specially since Smalltalk can handle cases like `(1/3)*3` => `1` which other languages cannot handle.
-* Smalltalk provides a quick way to simulate a mathematical function using a block `f := [ :x | 1 / x ]` which is quite neat. The block may get more complex if you use a function that is undefined for some values, such as Logarithm of a negative number, or division by zero.
+* Smalltalk provides a way to simulate a mathematical function using a block `f := [ :x | 1 / x ]` which is quite neat. The block may get more complex if you use a function that is undefined for some values, such as Logarithm of a negative number, or division by zero.
 
-So I embark myself into experimenting with an implementation of symbolic algebra for Smalltalk. Mathematics is a huge language in itself, and therefore there is an implicit scope on this project, but most algebra and a little of calculus has been implemented.
+So I embark myself into experimenting with an implementation of symbolic algebra for Smalltalk. Mathematics is a huge language in itself, and therefore there is an implicit scope on this project, but most algebra and a little of calculus has been implemented. New functions can be added with very little effort and without changing other classes, since the design contemplates ambiguity (unary or multiple function names), precedence, Smalltalk vs Math names, partial name match (#sqrt vs #sqr) and other problems have been solved.
 
 ## Why is called 'Mathemagics'?
 
-Originally the package was meant to be just process MathEx (short for Mathematical Expressions, and to match RegEx) but nowadays there is more functionality available.
-Apart from Mathematical Expressions, the package has a parser, a calculator, a repository for formulas, and more in the future.
+Originally the package was meant to be called MathEx (short for Mathematical Expressions, and to match RegEx) but nowadays there is more functionality already available. Apart from Mathematical Expressions, the package has a parser, a calculator, a repository for formulas, and more to come in the future.
 
 ## Ok.. but what can I do with it?
 
 A few examples of things you can do:
 
-* Building expressions with constructors (not recommended)
+* Building expressions with Number-like messages
 
 ```Smalltalk
-  MathExpPower leftSide: (MathExpVariable symbol: 'x')
-               rightSide: (MathExpNumber value: 2)              "x^2"
-```
-
-* Building expressions with Number-like messages and power symbol
-
-```Smalltalk
-  "Notice ** gets replaced by ^ on printing"
+  "Notice ** gets replaced by ^ on printing, both accepted"
   MathExpVariable x ** 3 negated                                "x^-3"
 ```
 
@@ -42,7 +35,7 @@ A few examples of things you can do:
   MathExpressionParser new parse: 'x + 2'.                      "x + 2"
 ```
 
-* Parse via expression, simplify, sort terms, use symbols
+* Parse via expression, simplify, sort terms, use symbols (pi => π)
 
 ```Smalltalk
   | fx |
@@ -51,11 +44,11 @@ A few examples of things you can do:
   fx simplify.                                                  "x^2 + 8·x + π"
 ```
 
-* Nested behaviour on simplification even for functions
+* Nested behaviour on simplification even on functions
 
 ```Smalltalk
   | fx |
-  fx := MathExpression from: 'sin(x) * cos(x+x)/sin(sqr(x)/x)'.
+  fx := MathExpression from: 'sin(x)*cos(x+x)/sin(sqr(x)/x)'.
   fx simplify.                                                  "cos(2·x)"
  ```
 
@@ -100,13 +93,13 @@ A few examples of things you can do:
 There are 4 basic components:
 
 1. **MathExpression:** *This class and its subclasses can represent any mathematical expression the user can write using a number, mathematical constants, operators and functions. A complex expression is built as a tree of mathematical expressions. This class is aligned with the Number class, so you will find familiar messages such as `+`, `#square`, `#isNumber`, `#asNumber`, `#positive`, etc. On top of those message you will find new functionality such as `#asPower`, `#simplify`, `#derivativeFor:`, `#dividend`, `#isFunction` and others. The subclasses prefix are shorten to 'MathExp' for simplicity reasons, but you shouldn't need to use them directly.*
-   - There are subclasses for unary expressions (sin, cos, abs)
-   - There are subclasses for binary expressions (power, log, addition)
-   - There are subclasses for value holders (numbers, constants, variables)
+   - Unary expressions (sin, cos, abs)
+   - Binary expressions (power, log, addition)
+   - Value holders (numbers, mathematical constants, variables)
    - Dependencies: `String`, `Number`, `Set`, `Dictionary`
 
 2. **MathExpressionParser:** *This class analyses a text and return a MathExpression representing it. The parser uses Maths precedence (not Smalltalk precedence). The parser has a fully implemented non-greedy Infix notation (and it should be possible to extend for Postfix or Polish notations).*
-   - Parser fits in just 1 class with barely 30 short methods !
+   - Parser fits in just 1 class with barely 30 short methods
    - Dynamic analysis of MathExpression hierarchy determines parser capabilities
    - Uses Regular Expressions instead of parser generators to avoid external dependencies
    - The underlying implementation algorithm based on is Shunting Yard
@@ -116,8 +109,8 @@ There are 4 basic components:
 3. **Calculator:** *This is a proxy to a simple Spec1 application (in the future can decide to call a Spec2 instead). It mainly contains an edit area, a results area, and a basic toolbar. The user types the expression so there is no need of buttons as in common calculators.*
    - Uses the parser and holds MathExpressions with their results
    - Displays the expression as close as possible the user entered (settings available)
-   - Then attemps to simplify the expression (e.g.: User enters `x+x` it will display the input and `= 2*x`)
-   - Then evaluates the expression to a Number if possible (e.g.: User enters `2+pi+2` it will print `pi+4 = 7.1415..`)
+   - Simplify the expression if possible (e.g.: User enters `x+x` it will display the input and `= 2*x`)
+   - Evaluates the expression to a Number if possible (e.g.: User enters `2+pi+2` it will print `pi+4 = 7.1415..`)
    - It allows copying to clipboard, inspection and manipulation of results
    - Dependencies: `MathExpression`, `MathExpressionParser`, `Spec1` (atm).
 
@@ -125,11 +118,6 @@ There are 4 basic components:
    - Class protocols becomes a classification mechanism: `Financial`, `Geometrical`, `Mathematical`, etc.
    - Formula parameters can be numbers or variables for further evaluation
    - Dependencies: `MathExpression`
-
-5. **Test:** *Tests are first based on the MathExpression subclasses alone, and other tests required many classes combined.*
-   - There is a super class to store variables and numbers frequently used
-   - Usually tests will require other expressions
-   - Dependencies: all the above
 
 ## Highlighted features
 
@@ -160,11 +148,11 @@ Here are some of the most interesting methods available:
 * `#cubed`
     Answers an expression raised to 3 (non-standard)
 
-## Examples
+## Examples using the package
 
 * Calculator
 
-    Editing formulas:
+    Editing formulas.
 
     ![Calculator](resources/screenshots/Calculator-screenshot-1.jpg)
 
@@ -173,6 +161,8 @@ Here are some of the most interesting methods available:
     ![Variables](resources/screenshots/Calculator-screenshot-2.jpg)
 
 * Using the library with Roassal
+
+    Demo code (text):
 
     ```Smalltalk
     | fx s p chart |
@@ -193,11 +183,12 @@ Here are some of the most interesting methods available:
     chart addPlot: p.
     chart open.
     ```
-    Example:
+
+    Produces this result:
 
     ![Roassal](resources/screenshots/Roassal-screenshot-1.jpg)
 
-    Example with derivative:
+    Another example with generated derivative:
 
     ![Roassal](resources/screenshots/Roassal-screenshot-2.jpg)
 
@@ -220,8 +211,8 @@ Some of the reasons for the design:
 - [x] Mimic Number classes (`+`, `-`, `negated`, `squared`, etc)
 - [x] Provide a minimalist way to extend the package (self discovery via `#mathSymbol`)
 - [x] Sorting terms as commonly done in Maths (variable - powers descending - numbers, e.g.: `x^2 + x + y + 4`)
-- [ ] Pending support of Equality and Inequality
 - [ ] Pending to implement `#solveFor: variable` (e.g: `(x + 5 = 2*x)` should return `x = 5`)
+- [ ] Pending support of Equality and Inequality
 - [ ] Pending support of Complex/Imaginary Numbers
 - [ ] Pending support or Units and conversions
 - [ ] Pending support of dual values for some expressions (`+/-√5`)
@@ -267,21 +258,21 @@ To open the GitHub Page click [here](https://grpistoia.github.io/Mathemagics/)
 
 * Remember that Mathematics is a language, and as such, humans express the same ideas in dozen of different ways. Therefore the code has built-in assumptions when it comes to determine how to simplify an expression. Some people may write `x + 1/x` while others may write `x + x^-1`, some people write `-(pi/2)` others `-pi/2` or `pi/-2` or `-1/2*pi` or `-0.5*pi` or `pi*-2^-1`. Well, maybe the last one is an exageration, but all those forms can be expressed with this library. There has been a great deal to be able to process all those combinations, while keeping the code as small and as simple as possible. The simplification mechanism will pick the ones that seems simpler.
 
-* In Smalltalk a symbol `=` is the equal comparison. Should we say in Smalltalk that `x + 8` is equals to `8 + x`, since the addition is commutative? I believe we should. Now `x + 8` will not equal to `(1*x + 8/1)^1 + 0` although mathematically they are. Therefore two expressions will be equal if they have the same form or the same commutative form including nested expressions. For other forms a #simplify method may be used and should will arrive to the same results.
+* In Smalltalk a symbol `=` is the equal comparison. Should we say in Smalltalk that `x + 8` is equals to `8 + x`, since the addition is commutative? I believe we should. Now `x + 8` will not equal to `(1*x + 8/1)^1 + 0` although mathematically they are. Therefore two expressions will be equal if they have the same form or the same commutative form including nested expressions. For other forms a `#simplify` method may be used and should will arrive to the same results.
 
 * Keep in mind that in Math `-2 ^ 2` is considered `-4` because power has precedence over the minus. Smalltall returns `4` instead.
 
-* The design sticks to "one class for each mathematical operand" (number, constant, variable, operator or function). Some tiny classes are there just for printing or input more than processing such as `sqr(2)` or `ln(x)`. Mathematical expressions may decide to convert themselves into others during simplification (for example, square function will turn itself to power during simplification).
+* The design sticks to "one class for each mathematical operand" (number, constant, variable, operator or function). Some tiny classes are there just for printing or input more than processing such as `sqr(2)` or `ln(x)`. Mathematical expressions may decide to convert themselves into others during simplification (for example, #sqr function will turn itself to power during simplification).
 
-* My first goal is to keep the library simple. Adding a new mathematical expression should be remain simple. The biggest challenge in the design was to avoid clutter and classes that were not representative. Therefore I removed Factory Methods and other design patterns that at one time were technically correct but practically difficult.  The expressions can be create as in Smalltalk, sending messages between each other or via the parser, and that seems to be simpler approach. Therefore you will see the hierarchy tree is surprisingly simple.
+* My first goal is to keep the library simple. Adding a new mathematical expression should be remain simple. The biggest challenge in the design was to avoid clutter and classes that were not representative. The expressions can be create as in Smalltalk, sending messages between each other or via the parser, and that seems to be simpler approach rather than creational patters and so. Therefore you will see the hierarchy tree is surprisingly simple.
 
-* A couple of methods (specifically `MathExpression>>safeguard:`) has a few IFs inside (may look a bit procedural). That method acts similar to a typical `#wrap:` method in Smalltalk to ensure the objects returned is always an instance of MathExpression. Allows to create an expression passing Number, Character, Symbol or String as in `MathExpAddition leftSide: 2 rightSide: #x` rather than `MathExpAddition leftSide: (MathExpNumber value: 2) rightSide: (MathExpVariable symbol: 'x')`. Of course normally there is a less cluttered way to create an addition with `MathExpNumber two + MathExpVariable x`, or use the parser. I chosen a single method with 6 lines of code rather than a builder class that would likely never be used.
+* A couple of methods (such as `MathExpression>>safeguard:`) has a few IFs inside (may look a bit procedural). That method acts similar to a typical `#wrap:` method in Smalltalk to ensure the objects returned is always an instance of MathExpression. Allows to create an expression passing Number, Character, Symbol or String as in `MathExpAddition leftSide: 2 rightSide: #x` rather than `MathExpAddition leftSide: (MathExpNumber value: 2) rightSide: (MathExpVariable symbol: 'x')`. Of course normally there is a less cluttered way to create an addition with `MathExpNumber two + MathExpVariable x`, or use the parser. I chosen a single method with 6 lines of code rather than a builder class that would likely never be used.
 
-* Be aware all simplification methods are highly recursive. The code was written without recursion flags (in contrast what you can see in Smalltalk TestCase), but eventually I added that in to guarantee that simplification will not freeze the virtual machine when code is extended. Simplification goes hand in hand with `termOrder` method.
+* Be aware all simplification methods are highly recursive. The original code was written without safety flags (in contrast what you can see in Smalltalk TestCase), but eventually I added that in to guarantee that simplification will not freeze the virtual machine when new operators are added. Simplification goes hand in hand with `termOrder` method.
 
-* The `#perform` method is used by the parser, even though the Quality Assistant complains, since it sends messages dynamically to create the expressions. Same for `#isKindOf:` or `self class == aClass`. That is not a mistake, read the comments. Sometimes a check for the exact class is required.
+* The `#perform` method is used by the parser, even though the Quality Assistant complains, since it sends messages dynamically to create the expressions. Same for `#isKindOf:` or `self class == aClass`. That is not a mistake, read the comments. Sometimes a check for the exact class is required, for examples, sometimes evaluating `asNumber` will do, but sometimes checks exactly for a Number instance.
 
-* Also the method `#isKindOf:` is used sometimes to avoid adding more methods in MathExpression that won't be overloaded, for example in `#isCommutative`, which compare self class with Addition and Multiplication. The purpose was to reduce code, rather than implementing a `^ false` and having two more methods in each subclass. The truth is that Substraction or Division are not going to become commutative any time soon, so having 1 method rather than 3 seems less clutter and easier to read.
+* Some methods do check `self class == MathExp...`. The purpose was to reduce code, rather than implementing a `^ false` and having two more methods in each subclass. The truth is that Substraction or Division are not going to become commutative any time soon, so having 1 method rather than 3 seems less clutter and easier to read.
 
 * The code was developed in Pharo 6, so no Traits have been used at this point.
 
